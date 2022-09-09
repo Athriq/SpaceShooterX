@@ -36,7 +36,7 @@ void AudioPlayer::Load(const char* p_path)
     if (!std::filesystem::exists(p_path))
         path = "assets/sounds/" + path;
 
-    if (fopen_s(&infile, path.c_str(), "r") != 0)
+    if (fopen_s(&infile, path.c_str(), "rb") != 0)
     {
         ShowGenericError("AudioPlayer::Load(): failed to open \"%s\"", path);
         return;

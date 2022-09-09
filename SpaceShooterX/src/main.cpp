@@ -43,13 +43,6 @@ int main(int argc, char* argv[])
 
             gameUI.Update(elapsed);
 
-            BaseConsole::GetInstance().DrawString({ 1,5 }, FG_WHITE, L"%f / %f", themePlayer->GetPlayPosition(), themePlayer->GetLength());
-
-            if (themePlayer->IsPlaying())
-            {
-                BaseConsole::GetInstance().DrawString({ 1,6 }, L"Playing");
-            }
-
             BaseConsole::GetInstance().Update(elapsed);
 
             if (exit)
