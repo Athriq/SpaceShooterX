@@ -8,6 +8,11 @@ float Vector2f::Angle() const
     return atan2f(y, x);
 }
 
+float Vector2f::LengthSquared() const
+{
+    return x * x + y * y;
+}
+
 void Vector2f::operator+=(const Vector2f& rhs)
 {
     x += rhs.x;

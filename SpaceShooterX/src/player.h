@@ -21,4 +21,5 @@ private:
     bool keys[10];
     std::shared_ptr<AudioPlayer> s_shootSound;
     std::shared_ptr<AudioPlayer> s_healthBoostSound;
+    std::shared_ptr<AudioPlayer> s_thrusterSound;
 };

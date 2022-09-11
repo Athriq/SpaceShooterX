@@ -33,14 +33,22 @@ void Player::OnAttach()
     s_healthBoostSound->m_destroyOnFinish = true;
     m_game->RegisterObject(s_healthBoostSound);
 
+    s_thrusterSound = std::make_shared<AudioPlayer>("thruster.wav");
+    s_thrusterSound->m_loop = true;
+    s_thrusterSound->SetVolume(0.0f);
+    s_thrusterSound->Play();
+    m_game->RegisterObject(s_thrusterSound);
+
     Spaceship::OnAttach();
 
+    // Needs the preceding init above before this can be done
     s_thrusterEmitter->m_direction = Vector2f(0, 1);
 }
 
 void Player::OnDetach()
 {
     s_shootSound->Invalidate();
+    s_thrusterSound->Invalidate();
     Spaceship::OnDetach();
 }
 
@@ -61,8 +69,10 @@ void Player::OnUpdate(float elapsed)
 
     m_rect.position.y += m_game->m_scrollSpeed * elapsed;
 
-    s_thrusterEmitter->m_spread = m_velocity.y == -13.0f ? 25.0f : 65.0f;
-    s_thrusterEmitter->m_initialVelocity = m_velocity.y == -13.0f ? 15.0f : 3.0f;
+    bool movingUpwards = m_velocity.x != 0 || m_velocity.y < 0;
+    s_thrusterEmitter->m_spread = movingUpwards < 0 ? 25.0f : 65.0f;
+    s_thrusterEmitter->m_initialVelocity = movingUpwards ? 20.0f : 5.0f;
+    s_thrusterSound->SetVolume(movingUpwards ? 0.8f : 0.0f);
 
     Spaceship::OnUpdate(elapsed);
 }

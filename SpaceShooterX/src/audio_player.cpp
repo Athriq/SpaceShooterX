@@ -61,13 +61,33 @@ void AudioPlayer::LoadFromFile(const char* p_path)
     int sample_size = header.m_bitsPerSample / 8;
     int samples_count = chunk.m_size * 8 / header.m_bitsPerSample;
 
-    short int* data = new short int[samples_count];
-    memset(data, 0, sizeof(short int) * samples_count);
+    void* data;
+
+    // This is horrible, find a more elegant and clean way to handle sample bits differences!!
+    if (header.m_bitsPerSample == 8)
+    {
+        data = new uint8_t[samples_count];
+        memset(data, 0, sizeof(uint8_t) * samples_count);
+    }
+    else if (header.m_bitsPerSample == 16)
+    {
+        data = new uint16_t[samples_count];
+        memset(data, 0, sizeof(uint16_t) * samples_count);
+    }
 
     // Read the raw sound data
     for (int i = 0; i < samples_count; i++)
     {
-        fread(&data[i], sample_size, 1, infile);
+        if (header.m_bitsPerSample == 8)
+        {
+            uint8_t* data8 = (uint8_t*)data;
+            fread(&data8[i], sample_size, 1, infile);
+        }
+        else if (header.m_bitsPerSample == 16)
+        {
+            uint16_t* data16 = (uint16_t*)data;
+            fread(&data16[i], sample_size, 1, infile);
+        }
     }
 
     fclose(infile);
@@ -103,23 +123,37 @@ void AudioPlayer::LoadFromFile(const char* p_path)
     delete[] data;
 }
 
-void AudioPlayer::Play()
+void AudioPlayer::Play(float p_from)
 {
     if (!s_dsBuffer)
         return;
 
-    s_dsBuffer->SetCurrentPosition(0);
-    s_dsBuffer->SetVolume(s_volume);
+    s_dsBuffer->SetCurrentPosition(p_from);
 
     if (FAILED(s_dsBuffer->Play(0, 0, m_loop ? DSBPLAY_LOOPING : 0)))
+    {
         ShowWinError(L"AudioPlayer::Play");
+        return;
+    }
 
     s_hasBeenPlayedOnce = true;
 }
 
 void AudioPlayer::SetVolume(float p_value)
 {
-    s_volume = ConvertLinearToDb(p_value);
+    float db = ConvertLinearToDb(p_value);
+
+    if (s_volume == db) return;
+    s_volume = db;
+    if (s_dsBuffer) s_dsBuffer->SetVolume(db);
+}
+
+void AudioPlayer::SetFrequency(float p_freq)
+{
+    if (!s_dsBuffer)
+        return;
+
+    s_dsBuffer->SetFrequency(p_freq);
 }
 
 bool AudioPlayer::IsPlaying()

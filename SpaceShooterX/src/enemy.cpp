@@ -23,5 +23,6 @@ void Enemy::OnAttach()
     Spaceship::OnAttach();
 
     s_thrusterEmitter->m_direction = Vector2f(0, -1);
+    s_thrusterEmitter->m_spread = 75.0f;
     s_thrusterEmitter->m_initialVelocity = 3.0f;
 }

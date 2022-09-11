@@ -12,8 +12,10 @@ public:
     void OnUpdate(float elapsed);
 
     void LoadFromFile(const char* p_path);
-    void Play();
+    void Play(float p_from = 0);
+
     void SetVolume(float p_value);
+    void SetFrequency(float p_freq);
 
     bool IsPlaying();
     float GetPlayPosition();

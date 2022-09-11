@@ -23,10 +23,11 @@ void Spaceship::OnAttach()
     s_hitSound->SetVolume(0.65f);
     m_game->RegisterObject(s_hitSound);
 
-    s_thrusterEmitter = std::make_shared<ParticleSystem>(10);
-    s_thrusterEmitter->m_localSpace = true;
-    s_thrusterEmitter->m_lifetime = 0.5f;
+    s_thrusterEmitter = std::make_shared<ParticleSystem>(20);
+    s_thrusterEmitter->m_lifetime = 0.7f;
     s_thrusterEmitter->m_lifetimeRandomness = 0.5f;
+    s_thrusterEmitter->m_initialColor = FG_YELLOW;
+    s_thrusterEmitter->m_endColor = FG_DARK_RED;
     m_game->RegisterObject(s_thrusterEmitter);
 }
 void Spaceship::OnDetach()

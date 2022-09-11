@@ -71,7 +71,6 @@ void ParticleSystem::OnUpdate(float elapsed)
             particle.time = 0;
             particle.lifetime = m_lifetime * (1.0f - Math::Randf() * m_lifetimeRandomness);
 
-            //particle.color = FG_WHITE;
 
             float angle = m_direction.Angle() + Math::ConvertToRadians((Math::Randf() * 2.0f - 1.0f) * m_spread);
             Vector2f direction(cosf(angle), sinf(angle));
@@ -93,7 +92,7 @@ void ParticleSystem::OnUpdate(float elapsed)
             particle.velocity += m_gravity * localElapsed;
         }
 
-        //particle.color = FG_WHITE;
+        particle.color = particle.time <= particle.lifetime / 2 ? m_initialColor : m_endColor;
         particle.position += particle.velocity * localElapsed;
     }
 }
@@ -107,6 +106,11 @@ void ParticleSystem::OnDraw()
 
         float xPos = m_localSpace ? m_rect.position.x + particle.position.x : particle.position.x;
         float yPos = m_localSpace ? m_rect.position.y + particle.position.y : particle.position.y;
-        BaseConsole::GetInstance().Draw(xPos, yPos, L'▪');
+        BaseConsole::GetInstance().Draw(xPos, yPos, L'▪', particle.color);
     }
+}
+
+void ParticleSystem::SetParticleCount(int p_amount)
+{
+    s_particles.resize(p_amount);
 }

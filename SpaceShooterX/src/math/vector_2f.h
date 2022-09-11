@@ -11,6 +11,7 @@ struct Vector2f
     Vector2f(float x, float y) : x(x), y(y) {}
 
     float Angle() const;
+    float LengthSquared() const;
 
     void operator+=(const Vector2f& rhs);
     void operator*=(const float& rhs);

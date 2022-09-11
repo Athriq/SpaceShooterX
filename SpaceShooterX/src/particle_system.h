@@ -10,6 +10,8 @@ public:
     void OnUpdate(float elapsed) override;
     void OnDraw() override;
 
+    void SetParticleCount(int p_amount);
+
 public:
     bool m_emitting = true;
 
@@ -22,6 +24,9 @@ public:
     Vector2f m_direction;
     float m_spread = 45.0f;
     Vector2f m_gravity;
+
+    short m_initialColor = FG_WHITE;
+    short m_endColor = FG_WHITE;
 
 private:
     struct Particle
