@@ -1,6 +1,6 @@
 #include "base_console.h"
 
-#include "math/vector_2.h"
+#include "math/vector_2f.h"
 #include "math/vector_2i.h"
 
 BaseConsole& BaseConsole::GetInstance()
@@ -93,18 +93,21 @@ void BaseConsole::CenterCursor(short xOffset)
 
 void BaseConsole::Draw(int p_x, int p_y, const wchar_t& p_glyph, short p_color)
 {
-	auto index = Vector2i(p_x, p_y).Index();
-	s_screenBuffer[index].Char.UnicodeChar = p_glyph;
-	s_screenBuffer[index].Attributes = p_color;
+    if (p_x < 0 || p_y < 0 || p_x > LEBAR_TAMPILAN || p_y > TINGGI_TAMPILAN)
+        return;
+
+	int grid = CartesianToGrid(p_x, p_y);
+	s_screenBuffer[grid].Char.UnicodeChar = p_glyph;
+	s_screenBuffer[grid].Attributes = p_color;
 }
 
-void BaseConsole::DrawString(Vector2 p_pos, std::wstring p_content, COLOR p_col)
+void BaseConsole::DrawString(Vector2f p_pos, std::wstring p_content, COLOR p_col)
 {
 	for (int i = 0; i < (int)p_content.size(); i++)
 	{
-		Vector2 temp = { p_pos.x + i, p_pos.y };
-		s_screenBuffer[temp.Index()].Char.UnicodeChar = p_content[i];
-		s_screenBuffer[temp.Index()].Attributes = p_col;
+		int grid = CartesianToGrid(p_pos.x + i, p_pos.y);
+		s_screenBuffer[grid].Char.UnicodeChar = p_content[i];
+		s_screenBuffer[grid].Attributes = p_col;
 	}
 }
 
@@ -113,3 +116,17 @@ const LPDIRECTSOUND8& BaseConsole::GetSoundInterface() const
     return s_directSound;
 }
 
+int BaseConsole::CartesianToGrid(const Vector2f& p_pos)
+{
+    return p_pos.y * LEBAR_TAMPILAN + p_pos.x;
+}
+
+int BaseConsole::CartesianToGrid(const Vector2i& p_pos)
+{
+    return p_pos.y * LEBAR_TAMPILAN + p_pos.x;
+}
+
+int BaseConsole::CartesianToGrid(int p_x, int p_y)
+{
+    return p_y * LEBAR_TAMPILAN + p_x;
+}

@@ -25,12 +25,17 @@ void AnimatedObject::OnUpdate(float elapsed)
 
         if (progress <= 0.0f || &frame == &sequence.back())
         {
-            for (auto& pixel : m_pixels)
+            if (frame.m_pixel.m_glyph == NULL)
             {
-                pixel.m_glyph = frame.m_pixel.m_glyph == NULL ? pixel.m_glyph : frame.m_pixel.m_glyph;
-                pixel.m_color = frame.m_pixel.m_color;
+                for (auto& pixel : m_pixels)
+                    pixel.m_color = frame.m_pixel.m_color;
             }
-
+            else
+            {
+                m_pixels.clear();
+                AddPixel(frame.m_pixel.m_glyph, frame.m_pixel.m_posisi, frame.m_pixel.m_color);
+            }
+            
             break;
         }
     }

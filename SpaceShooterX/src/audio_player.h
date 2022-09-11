@@ -11,7 +11,7 @@ public:
 
     void OnUpdate(float elapsed);
 
-    void Load(const char* p_path);
+    void LoadFromFile(const char* p_path);
     void Play();
     void SetVolume(float p_value);
 

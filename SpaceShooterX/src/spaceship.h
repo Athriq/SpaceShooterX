@@ -2,6 +2,7 @@
 
 #include "animated_object.h"
 #include "audio_player.h"
+#include "particle_system.h"
 
 class Projectile;
 
@@ -13,7 +14,8 @@ public:
     void OnAttach();
     void OnDetach();
     void OnUpdate(float elapsed);
-    void OnCollide(GameObject& other);
+
+    void Damage(float p_amount);
 
 protected:
     virtual void Shoot();
@@ -28,12 +30,15 @@ public:
     ORIENTATION orientation = ATAS;
     float projectileSpeed = 10;
     short m_color = FG_WHITE;
+    Vector2i m_thrusterPointOffset;
 
 protected:
     float shootCooldown = 0;
     float flashTimer;
     bool m_flashDamage = true;
     std::vector<short> m_tempColor;
+
+    std::shared_ptr<ParticleSystem> s_thrusterEmitter;
 
 private:
     std::shared_ptr<AudioPlayer> s_explosionSound;

@@ -25,12 +25,12 @@ int main(int argc, char* argv[])
     auto t0 = std::chrono::system_clock::now();
     auto t1 = std::chrono::system_clock::now();
 
+    // TODO: implement
+    bool paused = false;
+
     while (true)
     {
-        game.ResetGame();
-        game.SpawnPlayer();
-
-        while (true)
+        while (!paused)
         {
             t1 = std::chrono::system_clock::now();
             std::chrono::duration<float> dt = t1 - t0;
@@ -51,6 +51,9 @@ int main(int argc, char* argv[])
 
         BaseConsole::GetInstance().CenterCursor(-15);
         system("pause");
+
+        game.ResetGame();
+        game.SpawnPlayer();
     }
 
     BaseConsole::GetInstance().Clear();

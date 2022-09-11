@@ -9,7 +9,7 @@ constexpr auto DATA_ID = 0x61746164;
 
 AudioPlayer::AudioPlayer(const char* p_path)
 {
-    Load(p_path);
+    LoadFromFile(p_path);
 }
 
 AudioPlayer::~AudioPlayer()
@@ -27,7 +27,7 @@ void AudioPlayer::OnUpdate(float elapsed)
         Invalidate();
 }
 
-void AudioPlayer::Load(const char* p_path)
+void AudioPlayer::LoadFromFile(const char* p_path)
 {
     FILE* infile = nullptr;
 

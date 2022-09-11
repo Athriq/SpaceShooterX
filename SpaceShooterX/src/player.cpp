@@ -6,17 +6,22 @@
 void Player::OnAttach()
 {
     m_color = FG_GREEN;
-    AddPixel(L'U', { 1, 0 }, m_color);
-    AddPixel(L'║', { 0, 1 }, m_color);
-    AddPixel(L'G', { 1, 1 }, m_color);
-    AddPixel(L'╵', { 1, 2 }, m_color);
-    AddPixel(L'║', { 2, 1 }, m_color);
+    AddPixel(L'Δ', { 1, 0 }, m_color);
+    AddPixel(L'╱', { 0, 1 }, m_color);
+    AddPixel(L'͞', { 0, 2 }, m_color);
+    AddPixel(L'█', { 1, 1 }, m_color);
+    AddPixel(L'║', { 1, 2 }, m_color);
+    AddPixel(L'^', { 1, 3 }, m_color);
+    AddPixel(L'╲', { 2, 1 }, m_color);
+    AddPixel(L'͞', { 2, 2 }, m_color);
+    m_thrusterPointOffset.x = 1;
+    m_thrusterPointOffset.y = 4;
 
     m_hitpoints = MAX_PLAYER_HEALTH;
-    projectileSpeed = 20;
+    projectileSpeed = 30;
     rateOfFire = LAJU_TEMBAK;
     m_rect.position.x = LEBAR_TAMPILAN / 2;
-    m_rect.position.y = TINGGI_TAMPILAN - 10;
+    m_rect.position.y = TINGGI_TAMPILAN - 15;
     lockVerticalBounds = true;
 
     s_shootSound = std::make_shared<AudioPlayer>("laserShoot.wav");
@@ -29,6 +34,8 @@ void Player::OnAttach()
     m_game->RegisterObject(s_healthBoostSound);
 
     Spaceship::OnAttach();
+
+    s_thrusterEmitter->m_direction = Vector2f(0, 1);
 }
 
 void Player::OnDetach()
@@ -42,25 +49,20 @@ void Player::OnUpdate(float elapsed)
     for (int i = 0; i < 10; i++)
         keys[i] = GetAsyncKeyState("\x25\x27\x26\x28\x20\x57\x41\x53\x44\x10"[i]);
 
-    if (m_velocity.x != 0)
-        m_velocity.x = 0;
-
-    if (m_velocity.y != 0)
-        m_velocity.y = 0;
-
-    if (keys[0] || keys[6])
-        m_velocity.x = -13.0f;
-    if (keys[1] || keys[8])
-        m_velocity.x = 13.0f;
-    if (keys[2] || keys[5])
-        m_velocity.y = -13.0f;
-    if (keys[3] || keys[7])
-        m_velocity.y = 13.0f;
-
-    if (keys[9])
-        m_velocity *= 2.0f;
+    if (m_velocity.x != 0) m_velocity.x = 0;
+    if (m_velocity.y != 0) m_velocity.y = 0;
+    if (keys[0] || keys[6]) m_velocity.x = -13.0f;
+    if (keys[1] || keys[8]) m_velocity.x = 13.0f;
+    if (keys[2] || keys[5]) m_velocity.y = -13.0f;
+    if (keys[3] || keys[7]) m_velocity.y = 13.0f;
+    if (keys[9]) m_velocity *= 2.0f;
 
     m_isFiring = keys[4];
+
+    m_rect.position.y += m_game->m_scrollSpeed * elapsed;
+
+    s_thrusterEmitter->m_spread = m_velocity.y == -13.0f ? 25.0f : 65.0f;
+    s_thrusterEmitter->m_initialVelocity = m_velocity.y == -13.0f ? 15.0f : 3.0f;
 
     Spaceship::OnUpdate(elapsed);
 }

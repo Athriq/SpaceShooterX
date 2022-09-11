@@ -2,6 +2,7 @@
 
 #include "random_extension.h"
 #include "player.h"
+#include "enemy.h"
 
 void Projectile::OnAttach()
 {
@@ -29,12 +30,15 @@ void Projectile::OnCollide(GameObject& other)
 
         if (projectile && projectile->s_owner.lock().get() == owner.get())
             return;
+
+        if (dynamic_cast<Enemy*>(ship) && dynamic_cast<Enemy*>(owner.get()))
+            return;
     }
 
     if (ship || projectile)
     {
         if (ship)
-            ship->m_hitpoints--;
+            ship->Damage(1);
 
         if (dynamic_cast<Player*>(s_owner.lock().get()))
             m_game->m_score++;
@@ -59,9 +63,10 @@ void Projectile::SpawnCollisionParticles()
     partikel->m_rect.position = m_rect.position;
     partikel->m_destroyOnAnimationEnd = true;
 
-    auto speed = RandomUtils::random(3, 6);
-    partikel->m_velocity.x = RandomUtils::random(0, 5) < 3 ? speed : -speed;
-    partikel->m_velocity.y = RandomUtils::random(0, 5) < 3 ? speed : -speed;
+    float angle = ((float)rand() / (float)RAND_MAX) * 2.0f * 3.14159f;
+    float speed = RandomUtils::random(3, 6);
+    partikel->m_velocity.x = cosf(angle) * speed;
+    partikel->m_velocity.y = sinf(angle) * speed;
 
     partikel->AddPixel(L' ');
 

@@ -1,16 +1,11 @@
 #pragma once
 
-#include "vector_2.h"
+#include "vector_2f.h"
 
 struct Rect
 {
-    Vector2 position;
-    Vector2 size;
-
-    int ScaledIndex() const
-    {
-        return (position + size).Index();
-    }
+    Vector2f position;
+    Vector2f size;
 
     bool Intersects(const Rect& other)
     {

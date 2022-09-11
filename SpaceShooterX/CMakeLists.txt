@@ -4,7 +4,7 @@
 cmake_minimum_required (VERSION 3.8)
 
 # Add source to this project's executable.
-add_executable (SpaceShooterX "src/main.cpp"  "src/animated_object.cpp" "src/animated_object.h" "src/audio_player.cpp" "src/audio_player.h" "src/base_console.cpp" "src/base_console.h" "src/common.cpp" "src/common.h" "src/game.cpp" "src/game.h" "src/game_object.cpp" "src/game_object.h" "src/game_ui.cpp" "src/game_ui.h" "src/player.cpp" "src/player.h" "src/projectile.cpp" "src/projectile.h" "src/random_extension.h" "src/repair_pack.cpp" "src/repair_pack.h" "src/spaceship.cpp" "src/spaceship.h" "src/math/rect.h" "src/math/vector_2.cpp" "src/math/vector_2.h" "src/math/vector_2i.cpp" "src/math/vector_2i.h")
+add_executable (SpaceShooterX "src/main.cpp"  "src/animated_object.cpp" "src/animated_object.h" "src/audio_player.cpp" "src/audio_player.h" "src/base_console.cpp" "src/base_console.h" "src/common.cpp" "src/common.h" "src/game.cpp" "src/game.h" "src/game_object.cpp" "src/game_object.h" "src/game_ui.cpp" "src/game_ui.h" "src/player.cpp" "src/player.h" "src/projectile.cpp" "src/projectile.h" "src/random_extension.h" "src/repair_pack.cpp" "src/repair_pack.h" "src/spaceship.cpp" "src/spaceship.h" "src/math/rect.h" "src/math/vector_2f.cpp" "src/math/vector_2f.h" "src/math/vector_2i.cpp" "src/math/vector_2i.h" "src/particle_system.h" "src/enemy.h" "src/enemy.cpp" "src/particle_system.cpp" "src/math/math.h")
 
 target_link_libraries(SpaceShooterX dsound.lib)
 

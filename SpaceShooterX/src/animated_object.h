@@ -7,7 +7,7 @@ struct AnimationFrame
     Pixel m_pixel;
     float m_duration;
 
-    AnimationFrame(Pixel frame, float duration) : m_pixel(frame), m_duration(duration) {}
+    AnimationFrame(Pixel pixel, float duration) : m_pixel(pixel), m_duration(duration) {}
 };
 
 class AnimationClip

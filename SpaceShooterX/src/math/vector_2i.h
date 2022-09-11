@@ -1,6 +1,6 @@
 #pragma once
 
-struct Vector2;
+struct Vector2f;
 
 struct Vector2i
 {
@@ -13,8 +13,6 @@ struct Vector2i
     void operator+=(const Vector2i& rhs);
     Vector2i operator+(const Vector2i& rhs) const;
     bool operator==(const Vector2i& rhs) const;
-
-    int Index() const;
 
     void Nol();
 };

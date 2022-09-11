@@ -2,47 +2,17 @@
 
 #include "base_console.h"
 #include "player.h"
+#include "enemy.h"
 #include "repair_pack.h"
 #include "random_extension.h"
-
-class StarParticle : public AnimatedObject
-{
-public:
-    void OnAttach()
-    {
-        AnimationClip clip;
-
-        for (int n = 0; n < 3; n++)
-        {
-            AnimationFrame frame({ L".*o"[n], FG_DARK_GREY, {0, 0} }, RandomUtils::random(1.0f, 5.0f));
-            clip.AddFrame(std::move(frame));
-        }
-
-        m_collidable = false;
-        m_rect.position = Vector2(RandomUtils::random(0, LEBAR_TAMPILAN), RandomUtils::random(0, TINGGI_TAMPILAN));
-        m_velocity.y = 3.0f;
-        AddAnimationClip("flicker", std::move(clip));
-        Play("flicker", true);
-
-        AnimatedObject::OnAttach();
-    }
-
-    void OnUpdate(float elapsed)
-    {
-        if (m_rect.position.y > TINGGI_TAMPILAN)
-        {
-            m_rect.position.y = 0;
-            m_rect.position.x = rand() % LEBAR_TAMPILAN;
-        }
-
-        AnimatedObject::OnUpdate(elapsed);
-    }
-};
 
 Game::Game()
 {
     s_blipSound = std::make_shared<AudioPlayer>("blipSelect.wav");
     s_blipSound->SetVolume(0.7f);
+
+    ResetGame();
+    SpawnPlayer();
 }
 
 bool Game::Update(float elapsed)
@@ -122,21 +92,23 @@ bool Game::Update(float elapsed)
         }),
         s_objects.end());
 
+    // Draw background stars
+    for (size_t i = 0; i < s_bgStars.size(); i++)
+    {
+        s_bgStars[i].y += (i < s_bgStars.size() / 2 ? m_scrollSpeed : m_scrollSpeed * 0.1f) * elapsed;
+
+        if (s_bgStars[i].y > TINGGI_TAMPILAN)
+        {
+            s_bgStars[i].y = 0;
+            s_bgStars[i].x = rand() % LEBAR_TAMPILAN;
+        }
+
+        BaseConsole::GetInstance().Draw(s_bgStars[i].x, s_bgStars[i].y, L'∙', FG_GREY);
+    }
+
     // Draw all game objects
     for (int i = 0; i < s_objects.size(); i++)
-    {
-        auto& object = s_objects[i];
-
-        Vector2i rounded;
-        rounded.x = (int)object->m_rect.position.x;
-        rounded.y = (int)object->m_rect.position.y;
-
-        for (auto& pixel : object->GetPixels())
-        {
-            auto pixelPos = rounded + pixel.m_posisi;
-            BaseConsole::GetInstance().Draw(pixelPos.x, pixelPos.y, pixel.m_glyph, pixel.m_color);
-        }
-    }
+        s_objects[i]->OnDraw();
 
     // Player destroyed
     if (s_player.expired())
@@ -178,8 +150,8 @@ void Game::ClearObjects()
 void Game::ResetGame()
 {
     ClearObjects();
-
     SpawnBackgroundObjects();
+
     s_gameOver = false;
     s_gameOverTimer = 0;
     s_enemySpawnTimer = INTERVAL_MUSUH_MUNCUL;
@@ -214,8 +186,8 @@ bool Game::GameOver() const
 
 void Game::SpawnBackgroundObjects()
 {
-    for (int x = 0; x < 50; x++)
-        RegisterObject(std::make_shared<StarParticle>());
+    for (int x = 0; x < 300; x++)
+        s_bgStars.push_back(Vector2f(RandomUtils::random(0, LEBAR_TAMPILAN), RandomUtils::random(0, TINGGI_TAMPILAN)));
 }
 
 float Game::GetTimeUntilNextWave() const
@@ -246,18 +218,7 @@ void Game::HandleSpawns(float elapsed)
 
     if (s_enemySpawnTimer >= INTERVAL_MUSUH_MUNCUL)
     {
-        auto enemy = std::make_shared<Spaceship>();
-        enemy->m_color = FG_RED;
-        enemy->AddPixel(L'◄', { 0, 0 }, enemy->m_color);
-        enemy->AddPixel(0x2588, { 1, 0 }, enemy->m_color);
-        enemy->AddPixel(L'∏', { 1, 1 }, enemy->m_color);
-        enemy->AddPixel(L'►', { 2, 0 }, enemy->m_color);
-        enemy->m_hitpoints = 5;
-        enemy->rateOfFire = RandomUtils::random(0.25f, 1.0f);
-        enemy->orientation = BAWAH;
-        enemy->projectileSpeed = 20;
-        enemy->m_velocity.y = RandomUtils::random(3.0f, 5.0f);
-        enemy->m_isFiring = true;
+        auto enemy = std::make_shared<Enemy>();
         RegisterObject(enemy);
         SetRandomXPosNoOverlap(*enemy.get());
 

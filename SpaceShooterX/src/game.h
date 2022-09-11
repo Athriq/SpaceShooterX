@@ -7,6 +7,8 @@ class AnimatedObject;
 class Player;
 class AudioPlayer;
 
+struct Vector2f;
+
 /**
  * @brief This is the game world. Manages game logic and contains current world information.
  *
@@ -17,7 +19,7 @@ public:
     Game();
 
     /**
-     *  @brief The "heart" of the game's process. Returns true when the game is over.
+     *  @brief The "heart" of the game's process. Returns exit code.
      */
     bool Update(float elapsed);
 
@@ -51,8 +53,12 @@ public:
     // TODO: implement
     float m_masterVolume = 1.0f;
 
+    float m_scrollSpeed = 1.5f;
+
 private:
+    // TODO: do a major refactor, find a better approach than having a vector shared ptrs
     std::vector<std::shared_ptr<GameObject>> s_objects;
+    std::vector<Vector2f> s_bgStars;
 
     std::weak_ptr<Player> s_player;
     std::shared_ptr<AudioPlayer> s_blipSound;

@@ -1,5 +1,20 @@
 #include "game_object.h"
 
+#include "base_console.h"
+
+void GameObject::OnDraw()
+{
+    Vector2i rounded;
+    rounded.x = (int)m_rect.position.x;
+    rounded.y = (int)m_rect.position.y;
+
+    for (auto& pixel : m_pixels)
+    {
+        auto pixelPos = rounded + pixel.m_posisi;
+        BaseConsole::GetInstance().Draw(pixelPos.x, pixelPos.y, pixel.m_glyph, pixel.m_color);
+    }
+}
+
 void GameObject::AddPixel(wchar_t p_glyph, Vector2i p_pos, short p_color)
 {
     if (p_pos.x < 0 || p_pos.y < 0)

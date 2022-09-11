@@ -9,11 +9,12 @@
 #include <strsafe.h>
 #include <vector>
 #include <string>
-#include <math.h>
 #include <chrono>
 #include <memory>
 #include <map>
 #include <fstream>
+
+#include "math/math.h"
 
 #define TINGGI_TAMPILAN 55
 #define LEBAR_TAMPILAN 100

@@ -2,16 +2,17 @@
 
 #include "random_extension.h"
 #include "projectile.h"
+#include "math/math.h"
 
 void Spaceship::OnAttach()
 {
+    AnimationClip damageFlashAnim;
     for (auto& pixel : m_pixels)
         m_tempColor.push_back(pixel.m_color);
 
-    AnimationClip clip;
-    clip.AddFrame(AnimationFrame({ NULL, FG_YELLOW, {0, 0}}, 0.2f));
-    clip.AddFrame(AnimationFrame({ NULL, m_color, {0, 0}}, 0.2f));
-    AddAnimationClip("damage_flash", std::move(clip));
+    damageFlashAnim.AddFrame(AnimationFrame({ NULL, FG_YELLOW, {0, 0}}, 0.2f));
+    damageFlashAnim.AddFrame(AnimationFrame({ NULL, m_color, {0, 0}}, 0.2f));
+    AddAnimationClip("damage_flash", std::move(damageFlashAnim));
 
     s_explosionSound = std::make_shared<AudioPlayer>("explosion.wav");
     s_explosionSound->SetVolume(0.65f);
@@ -21,10 +22,17 @@ void Spaceship::OnAttach()
     s_hitSound = std::make_shared<AudioPlayer>("hit.wav");
     s_hitSound->SetVolume(0.65f);
     m_game->RegisterObject(s_hitSound);
+
+    s_thrusterEmitter = std::make_shared<ParticleSystem>(10);
+    s_thrusterEmitter->m_localSpace = true;
+    s_thrusterEmitter->m_lifetime = 0.5f;
+    s_thrusterEmitter->m_lifetimeRandomness = 0.5f;
+    m_game->RegisterObject(s_thrusterEmitter);
 }
 void Spaceship::OnDetach()
 {
     s_hitSound->Invalidate();
+    s_thrusterEmitter->Invalidate();
 }
 
 void Spaceship::OnUpdate(float elapsed)
@@ -45,21 +53,17 @@ void Spaceship::OnUpdate(float elapsed)
         }
     }
 
+    s_thrusterEmitter->m_rect.position.x = m_rect.position.x + (float)m_thrusterPointOffset.x;
+    s_thrusterEmitter->m_rect.position.y = m_rect.position.y + (float)m_thrusterPointOffset.y;
+
     AnimatedObject::OnUpdate(elapsed);
 }
 
-void Spaceship::OnCollide(GameObject& other)
+void Spaceship::Damage(float p_amount)
 {
-    auto projectile = dynamic_cast<Projectile*>(&other);
-
-    if (projectile)
-    {
-        if (projectile && projectile->GetOwner().lock().get() != this)
-        {
-            Play("damage_flash");
-            s_hitSound->Play();
-        }
-    }
+    m_hitpoints -= p_amount;
+    Play("damage_flash");
+    s_hitSound->Play();
 }
 
 void Spaceship::Shoot()
@@ -97,9 +101,10 @@ void Spaceship::Destroy()
             partikel->m_rect.position.y = m_rect.position.y + pixel.m_posisi.y;
             partikel->m_destroyOnAnimationEnd = true;
 
-            auto speed = RandomUtils::random(5, 10);
-            partikel->m_velocity.x = RandomUtils::random(0, 5) < 3 ? speed : -speed;
-            partikel->m_velocity.y = RandomUtils::random(0, 5) < 3 ? speed : -speed;
+            float angle = Math::Randf() * 2.0f * M_PI;
+            float speed = RandomUtils::random(5, 10);
+            partikel->m_velocity.x = cosf(angle) * speed;
+            partikel->m_velocity.y = sinf(angle) * speed;
 
             AnimationClip clip;
             for (int n = 0; n < 5; n++)
